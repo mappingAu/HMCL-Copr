@@ -1,4 +1,4 @@
-# hmcl-copr
+# HMCL-Copr
 
 This repository provides RPM packaging for HMCL.
 
@@ -7,3 +7,8 @@ This repository provides RPM packaging for HMCL.
 ```sh
 sudo dnf copr enable mapping1/HMCL
 sudo dnf install hmcl
+```
+
+## Imprint
+
+Auto-track HMCL "latest" version
