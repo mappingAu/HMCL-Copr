@@ -6,8 +6,8 @@ specfile_path: SPECS/hmcl.spec
 files_to_sync:
   - SPECS/hmcl.spec
 
-upstream_package_name: upstream-package
-downstream_package_name: your-package
+upstream_package_name: HMCL
+downstream_package_name: hmcl
 
 jobs:
   - job: copr_build
@@ -15,3 +15,7 @@ jobs:
     owner: mapping1
     project: HMCL
 
+  - job: copr_build
+    trigger: pull_request
+    owner: mapping1
+    project: HMCL
