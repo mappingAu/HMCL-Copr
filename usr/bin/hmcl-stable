@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+cd "$HOME"
+if [ -z "${HMCL_USER_HOME:-}" ]; then
+    if [ -z "${XDG_DATA_HOME:-}" ]; then
+        export HMCL_USER_HOME="$HOME/.local/share/hmcl"
+    else
+        export HMCL_USER_HOME="$XDG_DATA_HOME/hmcl"
+    fi
+fi
+if [ -z "${HMCL_LOCAL_HOME:-}" ]; then
+    export HMCL_LOCAL_HOME="$HMCL_USER_HOME/local-stable"
+fi
+if [ -z "${HMCL_DEPENDENCIES_DIR:-}" ]; then
+    export HMCL_DEPENDENCIES_DIR="$HMCL_USER_HOME/dependencies"
+fi
+exec /usr/share/java/hmcl/HMCL-3.15.2.sh "$@"
