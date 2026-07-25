@@ -1,2 +1,9 @@
 # hmcl-copr
-This is a third-party build for Fedora and derivatives of the HMCL project.
+
+This repository provides RPM packaging for HMCL.
+
+## Installation guide
+
+```sh
+sudo dnf copr enable mapping1/HMCL
+sudo dnf install hmcl
