@@ -1,4 +1,5 @@
-# HMCL-Copr
+ # 开发未完成，项目不可用 
+ # HMCL-Copr
 
 This repository provides RPM packaging for HMCL.
 
