@@ -1,31 +1,13 @@
-# 都是gemini写的
 upstream_project_url: https://github.com/HMCL-dev/HMCL
 upstream_tag_template: "v{version}"
 
 specfile_path: SPECS/hmcl.spec
-
-files_to_sync:
-  - SPECS/hmcl.spec
-  - hmcl-stable
-  - hmcl-stable.desktop
-  - hmcl-stable.png
-
 upstream_package_name: hmcl
 downstream_package_name: hmcl
 
 actions:
-  create-archive:
-    - bash -c "rm -f *.jar HMCL-*.jar"
-    - |
-      bash -c '
-        # 下载jar
-        URL=$(curl -s https://api.github.com/repos/HMCL-dev/HMCL/releases/latest | grep "browser_download_url.*\.jar" | cut -d : -f 2,3 | tr -d "\", ")
-        curl -L "$URL" -o "${URL##*/}"
-        
-        # gemini修的
-        cp hmcl-stable hmcl-stable.desktop hmcl-stable.png . 2>/dev/null || true
-      '
-    - bash -c "ls -1 HMCL-*.jar 2>/dev/null | head -n 1"
+  post-upstream-clone:
+    - bash -c 'TAG=$(git describe --tags --abbrev=0 | sed "s/^v//"); sed -i "s/%global jar_version .*/%global jar_version $TAG/" SPECS/hmcl.spec'
 
 jobs:
   - job: copr_build
