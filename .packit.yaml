@@ -7,7 +7,18 @@ downstream_package_name: hmcl
 
 actions:
   post-upstream-clone:
-    - bash -c 'TAG=$(git describe --tags --abbrev=0 | sed "s/^v//"); sed -i "s/%global jar_version .*/%global jar_version $TAG/" SPECS/hmcl.spec'
+    - bash -c '
+        TAG=$(curl -sSL https://api.github.com/repos/HMCL-dev/HMCL/releases/latest | python3 -c "import sys, json; print(json.load(sys.stdin).get(\"tag_name\", \"\"))" | sed "s/^v//");
+        
+        if [ -z "$TAG" ]; then
+          TAG=$(grep -m1 "^Version:" SPECS/hmcl.spec | awk "{print \$2}");
+          echo "Warning: GitHub API failed, fallback to spec version: $TAG";
+        else
+          echo "Successfully fetched latest upstream version: $TAG";
+        fi
+        
+        sed -i "s/%global jar_version .*/%global jar_version $TAG/" SPECS/hmcl.spec
+      '
 
 jobs:
   - job: copr_build
