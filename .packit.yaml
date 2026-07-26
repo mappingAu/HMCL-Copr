@@ -28,3 +28,4 @@ jobs:
     trigger: release
     owner: mapping1
     project: HMCL
+    
