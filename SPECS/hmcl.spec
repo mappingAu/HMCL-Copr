@@ -1,12 +1,12 @@
 Name:           hmcl
-Version:        3.15.2
+# 该字段无效。由packit在构建时自动替换
+Version:        1.0
 Release:        1%{?dist}
 Summary:        Hello Minecraft! Launcher
 
 License:        GPL-3.0-or-later
-URL:            https://hmcl.huangyuhui.net/
 URL:            https://github.com/HMCL-dev/HMCL
-Source0:        https://github.com/HMCL-dev/HMCL/releases/download/latest/HMCL-%{version}.jar
+Source0:        https://github.com/HMCL-dev/HMCL/releases/download/v%{version}/HMCL-%{version}.jar
 Source1:        hmcl-stable.desktop
 Source2:        hmcl-stable
 Source3:        hmcl-stable.png
