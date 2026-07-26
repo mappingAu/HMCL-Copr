@@ -2,8 +2,13 @@ upstream_project_url: https://github.com/HMCL-dev/HMCL
 upstream_tag_template: "v{version}"
 
 specfile_path: SPECS/hmcl.spec
+
+# 🌟 关键修改：告诉 Packit 将 spec 和所有依赖的 Source 辅助文件一起带上
 files_to_sync:
   - SPECS/hmcl.spec
+  - hmcl-stable.desktop
+  - hmcl-stable
+  - hmcl-stable.png
 
 upstream_package_name: hmcl
 downstream_package_name: hmcl
