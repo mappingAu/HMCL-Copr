@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=HMCL
+Comment=Hello Minecraft! Launcher
+Exec=./hmcl-stable
+Icon=./hmcl-stable.png
+Terminal=false
+StartupNotify=false
+Categories=Game;
+Keywords=mc;minecraft;
