@@ -1,31 +1,30 @@
-# 上游
-upstream_project_url: https://github.com/upstream-owner/upstream-repo
+upstream_project_url: https://github.com/HMCL-dev/HMCL
 upstream_tag_template: "v{version}"
 
 specfile_path: SPECS/hmcl.spec
 files_to_sync:
   - SPECS/hmcl.spec
 
-upstream_package_name: HMCL
+upstream_package_name: hmcl
 downstream_package_name: hmcl
 
 actions:
   create-archive:
     - bash -c "rm -f *.jar HMCL-*.jar"
-    - bash -c '
-        URL=$(curl -s https://api.github.com/repos/HMCL-dev/HMCL/releases/latest | grep "browser_download_url.*\.jar" | cut -d : -f 2,3 | tr -d "\", ");
-        curl -L "$URL" -o "${URL##*/}";
+    - |
+      bash -c '
+        URL=$(curl -s https://api.github.com/repos/HMCL-dev/HMCL/releases/latest | grep "browser_download_url.*\.jar" | cut -d : -f 2,3 | tr -d "\", ")
+        curl -L "$URL" -o "${URL##*/}"
       '
     - bash -c "ls -1 HMCL-*.jar 2>/dev/null | head -n 1"
 
 jobs:
   - job: copr_build
-    trigger: release
+    trigger: pull_request
     owner: mapping1
     project: HMCL
 
   - job: copr_build
-    trigger: pull_request
+    trigger: release
     owner: mapping1
     project: HMCL
-    
