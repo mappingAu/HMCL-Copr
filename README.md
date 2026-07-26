@@ -1,4 +1,5 @@
  # 开发未完成，项目不可用 
+ # The development isn't finished, the project can't be used
  # HMCL-Copr
 
 This repository provides RPM packaging for HMCL.
