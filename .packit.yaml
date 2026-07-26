@@ -5,9 +5,9 @@ specfile_path: SPECS/hmcl.spec
 
 files_to_sync:
   - SPECS/hmcl.spec
-  - usr/bin/hmcl-stable
-  - usr/share/applications/hmcl-stable.desktop
-  - usr/share/icons/hicolor/256x256/apps/hmcl-stable.png
+  - hmcl-stable
+  - hmcl-stable.desktop
+  - hmcl-stable.png
   
 upstream_package_name: hmcl
 downstream_package_name: hmcl
