@@ -9,6 +9,12 @@ files_to_sync:
 upstream_package_name: HMCL
 downstream_package_name: hmcl
 
+actions:
+  create-archive:
+    - bash -c "rm -f *.jar HMCL-*.jar"
+    - spectool -g SPECS/hmcl.spec
+    - bash -c "ls -1 HMCL-*.jar 2>/dev/null | head -n 1"
+
 jobs:
   - job: copr_build
     trigger: release
