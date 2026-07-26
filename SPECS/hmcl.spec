@@ -7,9 +7,9 @@ Summary:        Hello Minecraft! Launcher
 License:        GPL-3.0-or-later
 URL:            https://github.com/HMCL-dev/HMCL
 Source0:        https://github.com/HMCL-dev/HMCL/releases/download/v%{version}/HMCL-%{version}.jar
-Source1:        usr/bin/hmcl-stable
-Source2:        usr/share/applications/hmcl-stable.desktop
-Source3:        usr/share/icons/hicolor/256x256/apps/hmcl-stable.png
+Source1:        hmcl-stable
+Source2:        hmcl-stable.desktop
+Source3:        hmcl-stable.png
 
 BuildArch:      noarch
 
