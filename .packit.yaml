@@ -12,7 +12,10 @@ downstream_package_name: hmcl
 actions:
   create-archive:
     - bash -c "rm -f *.jar HMCL-*.jar"
-    - spectool -g SPECS/hmcl.spec
+    - bash -c '
+        URL=$(curl -s https://api.github.com/repos/HMCL-dev/HMCL/releases/latest | grep "browser_download_url.*\.jar" | cut -d : -f 2,3 | tr -d "\", ");
+        curl -L "$URL" -o "${URL##*/}";
+      '
     - bash -c "ls -1 HMCL-*.jar 2>/dev/null | head -n 1"
 
 jobs:
