@@ -43,13 +43,13 @@ install -m 644 %{SOURCE0} %{buildroot}%{_javadir}/hmcl/HMCL-%{version}.jar
 
 # --- 启动脚本 ---
 install -d %{buildroot}%{_bindir}
-install -m 755 %{SOURCE2} %{buildroot}%{_bindir}/hmcl-stable
+install -m 755 %{SOURCE1} %{buildroot}%{_bindir}/hmcl-stable
 
 # --- Desktop 文件 ---
 install -d %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE1}
+  %{SOURCE2}
 
 # --- 图标 ---
 install -d %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
