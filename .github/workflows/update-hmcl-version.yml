@@ -1,0 +1,113 @@
+name: Update HMCL
+
+# Keeps the package in sync with the latest HMCL release.  A version bump is
+# committed to the default branch, which in turn triggers the packit Copr
+# build (see the `commit` job in .packit.yaml).
+
+on:
+  schedule:
+    # Every day at 03:17 UTC.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-hmcl
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Bump to the latest HMCL release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the packaging repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve the latest HMCL release
+        id: hmcl
+        run: |
+          set -euo pipefail
+
+          tag=$(curl -fsSL -H 'Accept: application/vnd.github+json' \
+                  https://api.github.com/repos/HMCL-dev/HMCL/releases/latest \
+                | jq -r '.tag_name')
+          version=${tag#v}
+
+          if ! [[ $version =~ ^[0-9]+(\.[0-9]+)+$ ]]; then
+            echo "::error::Unexpected upstream tag '${tag}'"
+            exit 1
+          fi
+
+          # Make sure the release really carries the jar that we package.
+          curl -fsSLI -o /dev/null \
+            "https://github.com/HMCL-dev/HMCL/releases/download/${tag}/HMCL-${version}.jar"
+
+          current=$(sed -n 's/^Version:[[:space:]]*//p' hmcl.spec | head -n 1)
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+          if [ "$version" = "$current" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "hmcl.spec is already at ${current}, nothing to do."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Updating ${current} -> ${version}."
+          fi
+
+      - name: Update hmcl.spec
+        if: steps.hmcl.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.hmcl.outputs.version }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime
+          import os
+          import pathlib
+          import re
+
+          version = os.environ["VERSION"]
+          spec_path = pathlib.Path("hmcl.spec")
+          spec = spec_path.read_text(encoding="utf-8")
+
+          spec, count = re.subn(
+              r"^Version:\s+\S+$", f"Version:        {version}", spec,
+              count=1, flags=re.MULTILINE,
+          )
+          if count != 1:
+              raise SystemExit("hmcl.spec: no Version: line found")
+
+          spec, count = re.subn(
+              r"^Release:\s+\S+$", "Release:        1%{?dist}", spec,
+              count=1, flags=re.MULTILINE,
+          )
+          if count != 1:
+              raise SystemExit("hmcl.spec: no Release: line found")
+
+          today = datetime.date.today()
+          stamp = f"{today:%a} {today:%b} {today.day:02d} {today:%Y}"
+          entry = (
+              f"* {stamp} HMCL Copr automation <noreply@github.com> "
+              f"- {version}-1\n- Update to HMCL {version}\n\n"
+          )
+          if "%changelog\n" not in spec:
+              raise SystemExit("hmcl.spec: no %changelog section found")
+          spec = spec.replace("%changelog\n", "%changelog\n" + entry, 1)
+
+          spec_path.write_text(spec, encoding="utf-8")
+          PY
+          git --no-pager diff -- hmcl.spec
+
+      - name: Commit and push the version bump
+        if: steps.hmcl.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.hmcl.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -am "Update to HMCL ${VERSION}"
+          git push

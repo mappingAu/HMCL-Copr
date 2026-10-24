@@ -1,32 +1,38 @@
-upstream_project_url: https://github.com/HMCL-dev/HMCL
-upstream_tag_template: "v{version}"
+# Packit configuration for the HMCL Copr package.
+#
+# HMCL only publishes prebuilt binaries, never source tarballs, so there is
+# nothing to build from an upstream git checkout.  The package therefore
+# repackages the jar attached to the upstream GitHub release, which is fetched
+# by the `create-archive` action below; packit then rewrites Source0 in
+# hmcl.spec to point at the local copy of that jar.
+#
+# Note: every action entry is executed as a single command (shlex-split, no
+# shell), hence the explicit `bash -ec '...'` wrapper.
 
-specfile_path: SPECS/hmcl.spec
-upstream_package_name: hmcl
+specfile_path: hmcl.spec
 downstream_package_name: hmcl
+upstream_package_name: hmcl
 
 actions:
-  post-upstream-clone:
-    - |
-      if [ -n "$PACKIT_PROJECT_VERSION" ]; then
-        TAG="$PACKIT_PROJECT_VERSION"
-      else
-        TAG=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')
-      fi
-      
-      if [ -z "$TAG" ]; then
-        TAG=$(grep -m1 '^Version:' SPECS/hmcl.spec | awk '{print $2}')
-      fi
-      
-      sed -i "s/%global jar_version .*/%global jar_version $TAG/" SPECS/hmcl.spec
+  create-archive:
+    - >-
+      bash -ec 'version=$(sed -n "s/^Version:[[:space:]]*//p" hmcl.spec | head -n 1);
+      jar="HMCL-${version}.jar";
+      curl -fsSL --retry 3 --retry-delay 2 -o "${jar}"
+      "https://github.com/HMCL-dev/HMCL/releases/download/v${version}/${jar}";
+      echo "${jar}"'
 
 jobs:
+  # Build pull requests so packaging changes can be tested before they land.
   - job: copr_build
     trigger: pull_request
     owner: mapping1
     project: HMCL
 
+  # Build every push to the default branch, including the version bumps
+  # committed by .github/workflows/update-hmcl-version.yml.
   - job: copr_build
-    trigger: release
+    trigger: commit
+    branch: main
     owner: mapping1
     project: HMCL
