@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
-cd "$HOME"
+#
+# Launcher for the HMCL RPM package.
+#
+# Upstream ships a self-extracting shell script; the package installs the plain
+# jar instead, so the runtime environment is set up here:
+#
+#   * HMCL's per-user state is kept in XDG directories instead of the current
+#     working directory (same defaults as the upstream .deb launcher),
+#   * the distribution JavaFX modules are handed to the JVM via --module-path,
+#     so HMCL does not download JavaFX into the user's home on first start,
+#   * HMCL_JAVA_HOME and HMCL_JAVA_OPTS are honoured like upstream does.
+#
+# Set HMCL_JAVA_OPTS to override the JVM options.
+
+if [ -n "${HOME:-}" ]; then
+    cd "$HOME" || exit 1
+fi
+
 if [ -z "${HMCL_USER_HOME:-}" ]; then
     if [ -z "${XDG_DATA_HOME:-}" ]; then
         export HMCL_USER_HOME="$HOME/.local/share/hmcl"
@@ -13,4 +30,28 @@ fi
 if [ -z "${HMCL_DEPENDENCIES_DIR:-}" ]; then
     export HMCL_DEPENDENCIES_DIR="$HMCL_USER_HOME/dependencies"
 fi
-exec /usr/share/java/hmcl/HMCL-3.15.2.sh "$@"
+
+# Paths can be overridden, which is handy when testing a freshly built package.
+HMCL_JAR="${HMCL_JAR:-/usr/share/java/hmcl/hmcl.jar}"
+OPENJFX_DIR="${HMCL_OPENJFX_DIR:-/usr/lib/jvm/openjfx}"
+
+if [ -n "${HMCL_JAVA_HOME:-}" ] && [ -x "$HMCL_JAVA_HOME/bin/java" ]; then
+    JAVA="$HMCL_JAVA_HOME/bin/java"
+else
+    JAVA="java"
+fi
+
+# Same defaults as upstream's launcher.
+HMCL_JAVA_OPTS="${HMCL_JAVA_OPTS:--XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=15}"
+
+JFX_OPTS=()
+if [ -d "$OPENJFX_DIR" ]; then
+    JFX_OPTS=(
+        --module-path "$OPENJFX_DIR"
+        --add-modules javafx.controls,javafx.fxml,javafx.media,javafx.swing,javafx.web
+    )
+fi
+
+# Word splitting of HMCL_JAVA_OPTS is intentional.
+# shellcheck disable=SC2086
+exec "$JAVA" $HMCL_JAVA_OPTS "${JFX_OPTS[@]}" -jar "$HMCL_JAR" "$@"

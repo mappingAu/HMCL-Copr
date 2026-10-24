@@ -1,0 +1,6 @@
+# Build artefacts (see Makefile)
+/out/
+/*.rpm
+/*.src.rpm
+/*.jar
+/*.tar.gz
