@@ -4,7 +4,7 @@
 # .deb package (launcher, .desktop file, icon).
 
 Name:           hmcl
-Version:        3.16.4
+Version:        3.16.3
 Release:        1%{?dist}
 Summary:        Hello Minecraft! Launcher
 License:        GPL-3.0-or-later
