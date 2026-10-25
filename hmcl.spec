@@ -4,7 +4,7 @@
 # .deb package (launcher, .desktop file, icon).
 
 Name:           hmcl
-Version:        3.16.3
+Version:        3.16.4
 Release:        1%{?dist}
 Summary:        Hello Minecraft! Launcher
 License:        GPL-3.0-or-later
@@ -72,6 +72,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/hmcl-stable.desktop
 %{_datadir}/icons/hicolor/256x256/apps/hmcl-stable.png
 
 %changelog
+* Sun Oct 25 2026 HMCL Copr automation <noreply@github.com> - 3.16.4-1
+- Update to HMCL 3.16.4
+
 * Sat Oct 24 2026 mapping1 <apply0@outlook.com> - 3.16.4-1
 - Update to HMCL 3.16.4
 - Install the release jar and a launcher that actually points at it; the
