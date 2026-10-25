@@ -1,5 +1,7 @@
 # HMCL Copr
 
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/mapping1/HMCL/package/hmcl/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/mapping1/HMCL/)
+
 RPM packaging for [HMCL](https://github.com/HMCL-dev/HMCL) (Hello Minecraft!
 Launcher), built automatically in the
 [mapping1/HMCL](https://copr.fedorainfracloud.org/coprs/mapping1/HMCL/) Copr
@@ -14,6 +16,10 @@ sudo dnf install hmcl
 
 Launch **HMCL** from the application menu, or run `hmcl` / `hmcl-stable` in a
 terminal.
+
+Currently built for `fedora-44-x86_64` only. To build for other releases,
+enable the matching chroots in the Copr project settings; `.packit.yaml` takes
+the targets from the Copr project and does not need to change.
 
 ## What the package contains
 
@@ -39,7 +45,7 @@ override the defaults, exactly like the upstream `.deb` launcher.
    runs once a day (and on demand). It reads the latest HMCL release from the
    GitHub API, and when the version differs from `Version:` in `hmcl.spec` it
    bumps the spec, resets `Release:` and prepends a `%changelog` entry before
-   pushing to `main`.
+   pushing to `main` as `github-actions[bot]`.
 2. The push triggers [packit](https://packit.dev) (the `commit` job in
    [`.packit.yaml`](.packit.yaml)). Packit downloads
    `HMCL-<version>.jar` from the upstream release with the `create-archive`
@@ -50,6 +56,12 @@ override the defaults, exactly like the upstream `.deb` launcher.
 
 Everything is driven by the `Version:` field in `hmcl.spec` — there is no
 second, hidden version to keep in sync.
+
+Because `main` no longer requires pull requests (the branch ruleset only
+forbids force pushes and deletion), the bot can push version bumps directly.
+HMCL only ships binaries, so the build itself never needs the upstream git
+repository; packit builds this repository's `main` and repackages the release
+jar.
 
 ## Building locally
 
